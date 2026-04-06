@@ -12,6 +12,7 @@ permissions:
 
 env:
   JAVA_VERSION: 21
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
 
@@ -24,9 +25,6 @@ jobs:
 
     outputs:
       cache-key: ${{ steps.cache-key.outputs.key }}
-
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Checkout
