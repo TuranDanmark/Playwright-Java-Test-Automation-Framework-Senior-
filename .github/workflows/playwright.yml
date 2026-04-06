@@ -1,0 +1,78 @@
+name: Playwright Tests (Java)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: maven-${{ hashFiles('**/pom.xml') }}
+
+      - name: Install Playwright Browsers
+        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
+
+      - name: Run Tests
+        run: |
+          mvn clean test \
+          -Dbrowser=${{ matrix.browser }} \
+          -Dheadless=true \
+          -DretryCount=1
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-${{ matrix.browser }}
+          path: target/allure-results
+
+  allure:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          path: allure-results
+
+      - name: Merge results
+        run: |
+          mkdir merged-results
+          find allure-results -type f -name "*.json" -exec cp {} merged-results \;
+
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.7
+        with:
+          allure_results: merged-results
+          allure_report: allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report

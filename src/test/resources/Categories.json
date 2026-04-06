@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Assertion Failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*AssertionError.*"
+  },
+  {
+    "name": "Null Pointer Issues",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*NullPointerException.*"
+  },
+  {
+    "name": "Timeout Issues",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*Timeout.*"
+  }
+]

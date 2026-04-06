@@ -1,0 +1,37 @@
+<configuration>
+
+    <!-- 📺 Консольный вывод -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 💾 Файловый лог с ротацией по дате -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/test.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- каждый день новый файл -->
+            <fileNamePattern>logs/test-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- сохранять логи за последние 30 дней -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 📌 Логи собственного кода на DEBUG для детальной отладки -->
+    <logger name="com.elvira" level="DEBUG" />
+
+    <!-- 📌 Логи внешних библиотек на INFO, чтобы меньше шума -->
+    <logger name="org.junit" level="INFO" />
+    <logger name="com.microsoft.playwright" level="INFO" />
+
+    <!-- 🔧 Root logger -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>
