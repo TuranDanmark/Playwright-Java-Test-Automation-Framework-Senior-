@@ -22,12 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-
     outputs:
       cache-key: ${{ steps.cache-key.outputs.key }}
+
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Checkout
