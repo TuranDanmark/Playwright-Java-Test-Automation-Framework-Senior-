@@ -1,13 +1,69 @@
-name: Playwright Tests (Java)
+name: Playwright CI (Senior Level)
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  JAVA_VERSION: 21
+
 jobs:
-  test:
+
+  # =========================
+  # BUILD STAGE
+  # =========================
+  build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      # 🔑 Генерация ключа кэша
+      - name: Generate cache key
+        id: cache-key
+        run: echo "key=playwright-${{ runner.os }}-v2" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.cache-key.outputs.key }}
+
+      # Install browsers + deps
+      - name: Install Playwright Browsers
+        run: mvn exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium firefox webkit --force"
+
+      - name: Install Playwright dependencies
+        run: npx playwright install-deps
+        
+      - name: Build project (skip tests)
+        run: mvn -B clean package -DskipTests
+
+  # =========================
+  # TEST STAGE (MATRIX)
+  # =========================
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     strategy:
       fail-fast: false
@@ -15,64 +71,83 @@ jobs:
         browser: [chromium, firefox, webkit]
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
 
-      - name: Cache Maven
+      - name: Restore Playwright Cache
         uses: actions/cache@v4
         with:
-          path: ~/.m2
-          key: maven-${{ hashFiles('**/pom.xml') }}
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-v2
 
-      - name: Install Playwright Browsers
-        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
-
+      # 🎯 Запуск тестов
       - name: Run Tests
         run: |
-          mvn clean test \
+          mvn -B test \
           -Dbrowser=${{ matrix.browser }} \
           -Dheadless=true \
           -DretryCount=1
-
-      - name: Upload Allure results
-        uses: actions/upload-artifact@v4
+      # 📦 Артефакты (важно для дебага)
+      - name: Upload Allure Results
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ matrix.browser }}
+          name: allure-${{ matrix.browser }}
           path: target/allure-results
 
-  allure:
+      - name: Upload Traces / Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.browser }}
+          path: |
+            target/traces
+            target/screenshots
+            target/videos
+          if-no-files-found: ignore
+
+  # =========================
+  # REPORT STAGE
+  # =========================
+  report:
     needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Allure results
+      - name: Download All Results
         uses: actions/download-artifact@v4
         with:
-          path: allure-results
+          path: artifacts
 
-      - name: Merge results
+      # 🧠 Merge Allure
+      - name: Merge Allure Results
         run: |
-          mkdir merged-results
-          find allure-results -type f -name "*.json" -exec cp {} merged-results \;
-
+          mkdir -p target/allure-results
+          find artifacts -type f -name "*.json" \
+          -exec cp {} target/allure-results \;
       - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1.7
-        with:
-          allure_results: merged-results
-          allure_report: allure-report
+        run: mvn allure:report
 
+      # 📊 GitHub summary (Senior touch)
+      - name: Publish Summary
+        run: |
+          echo "## ✅ Test Report" >> $GITHUB_STEP_SUMMARY
+          echo "Allure report generated successfully." >> $GITHUB_STEP_SUMMARY
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-report
+          publish_branch: gh-pages
+          publish_dir: ./target/site/allure-maven-plugin
+          force_orphan: true
