@@ -129,4 +129,5 @@ public class AllureAttachmentService {
         System.err.println("[ALLURE ATTACHMENT ERROR] " + message);
         e.printStackTrace();
     }
+    
 }
