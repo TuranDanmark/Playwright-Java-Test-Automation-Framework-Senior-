@@ -95,6 +95,7 @@ jobs:
           -Dbrowser=${{ matrix.browser }} \
           -Dheadless=true \
           -DretryCount=1
+
       # 📦 Артефакты (важно для дебага)
       - name: Upload Allure Results
         if: always()
@@ -139,6 +140,15 @@ jobs:
           -exec cp {} target/allure-results \;
       - name: Generate Allure Report
         run: mvn allure:report
+
+      - name: Deploy (debug)
+        run: |
+          git checkout --orphan gh-pages
+          git rm -rf .
+          cp -r target/site/allure-maven-plugin/* .
+          git add .
+          git commit -m "test deploy"
+          git push origin gh-pages --force
 
       # 📊 GitHub summary (Senior touch)
       - name: Publish Summary
