@@ -1,0 +1,12 @@
+Error {
+  message='Timeout 30000ms exceeded.
+  name='TimeoutError
+  stack='TimeoutError: Timeout 30000ms exceeded.
+    at ProgressController.run (C:\Users\halat\AppData\Local\Temp\playwright-java-922398167569695404\package\lib\server\progress.js:78:26)
+    at Frame.goto (C:\Users\halat\AppData\Local\Temp\playwright-java-922398167569695404\package\lib\server\frames.js:517:23)
+    at FrameDispatcher.goto (C:\Users\halat\AppData\Local\Temp\playwright-java-922398167569695404\package\lib\server\dispatchers\frameDispatcher.js:81:119)
+    at FrameDispatcher._handleCommand (C:\Users\halat\AppData\Local\Temp\playwright-java-922398167569695404\package\lib\server\dispatchers\dispatcher.js:94:40)
+    at DispatcherConnection.dispatch (C:\Users\halat\AppData\Local\Temp\playwright-java-922398167569695404\package\lib\server\dispatchers\dispatcher.js:365:39)
+}
+Call log:
+- navigating to "https://eskiz.uz/", waiting until "load"

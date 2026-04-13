@@ -3,10 +3,13 @@ package com.elvira.tests;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import com.elvira.core.base.BaseTest;
 import com.elvira.core.extension.RetryExtension;
 import com.elvira.pages.EskizRezumePage;
+
 import io.qameta.allure.*;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 @Epic("Eskiz App")
@@ -21,16 +24,21 @@ public class EskizRezumePageTest extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     void shouldOpenResumeForm() {
 
-        EskizRezumePage eskizPage = new EskizRezumePage()
-                .open()
-                .openSites()
-                .openExpressSites()
-                .openOrderPage()
-                .openCareer()
-                .attachResume();
+        EskizRezumePage eskizPage = new EskizRezumePage();
+
+        eskizPage.open();
+        eskizPage.openSites();
+        eskizPage.openExpressSites();
+        eskizPage.openCareer();
+        eskizPage.attachResume();
 
         Allure.step("Verify resume submission form is visible", () -> {
-            eskizPage.waitVisible(eskizPage.resumeFormTitle(), "Resume Form Title", 5000);
+            eskizPage.waitVisible(
+                    eskizPage.resumeFormTitle(),
+                    "Resume Form Title",
+                    5000
+            );
+
             assertThat(eskizPage.resumeFormTitle()).isVisible();
         });
     }

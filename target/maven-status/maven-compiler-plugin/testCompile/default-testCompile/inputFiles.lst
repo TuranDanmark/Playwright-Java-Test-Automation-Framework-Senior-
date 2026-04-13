@@ -1,3 +1,4 @@
+C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\extension\TestListener.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\lifecyle\TestLifecycleManager.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\browser\BrowserFactory.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\pages\BasePage.java
@@ -8,7 +9,6 @@ C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\c
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\utils\PageEventListener.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\tracing\TracingManager.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\allure\AllureEnvironmentWriter.java
-C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\utils\TestListener.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\extension\RetryExtension.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\config\Environment.java
 C:\Users\halat\playwright-java-junior-experience\src\test\java\com\elvira\core\context\TestContext.java

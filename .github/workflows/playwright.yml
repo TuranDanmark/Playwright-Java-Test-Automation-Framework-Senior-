@@ -95,6 +95,7 @@ jobs:
           -Dbrowser=${{ matrix.browser }} \
           -Dheadless=true \
           -DretryCount=1
+          
       # 📦 Артефакты (важно для дебага)
       - name: Upload Allure Results
         if: always()

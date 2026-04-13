@@ -1,7 +1,6 @@
 package com.elvira.pages;
 
 import com.elvira.core.config.ConfigReader;
-import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.options.AriaRole;
 import io.qameta.allure.Step;
 import com.microsoft.playwright.*;
@@ -58,4 +57,5 @@ public class EskizRezumePage extends BasePage {
         return page.getByRole(AriaRole.HEADING, 
               new Page.GetByRoleOptions().setName("Отправить резюме"));
     }
+
 }
